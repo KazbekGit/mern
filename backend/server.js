@@ -1,7 +1,7 @@
 import express from "express";
 import connectToDB from "./config/db.js";
 import cors from "cors";
-import { Router } from "express";
+import userRouter from "./routes/userRouter.js";
 
 const PORT = process.env.PORT || 3000;
 
@@ -15,11 +15,14 @@ app.use(
     origin: "http://localhost:5000",
   })
 );
+app.use('/api', userRouter)
 
+//routes
 app.get('/', (req, res) => {
   res.status(200).send('<h3>Main page here</h3>')
 })
 
+//start server
 const startServer = async () => {
   try {
     // Connect to DB
@@ -33,18 +36,18 @@ const startServer = async () => {
   }
 };
 
+// logging
+app.use((req, res, next) => {
+  console.log(`${req.method} request for '${req.url}'`);
+  next();
+});
+
 // Error handling
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.json({
     message: err.message,
   });
-});
-
-// logging
-app.use((req, res, next) => {
-  console.log(`${req.method} request for '${req.url}'`);
-  next();
 });
 
 startServer();
